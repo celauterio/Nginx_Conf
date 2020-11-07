@@ -44,7 +44,7 @@ server {
       ####qualquer coisa desativar acima
       proxy_pass http://api;
   }
-    ####Bloqueio Rais
+    ####Bloqueio Raiz
    location / {
           return 403;
         }
