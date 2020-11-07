@@ -1,0 +1,52 @@
+#Set the upstream (servers to load balance)
+#HTTP stream
+upstream api {
+  #least_conn;
+   #WEBSERVER01
+   server 10.10.10.1 weight=1 fail_timeout=30s;
+   #WEBSERVER02
+   server 10.10.10.2 weight=1 fail_timeout=30s;
+   #WEBSERVER03
+   server 10.10.10.3 weight=1 fail_timeout=30s;
+   #WEBSERVER04
+   server 10.10.10.4 weight=1 fail_timeout=30s;
+   #WEBSERVER05
+   server 10.10.10.5 weight=1 fail_timeout=30s;
+   ##WEBSERVER06
+   server 10.10.10.6 weight=1 fail_timeout=30s;
+   }
+#HTTP
+server {
+  listen 80;
+     server_name yourdomain.com;
+  location /dir1 {
+      proxy_set_header Host $host;
+      # So the original HTTP Host header is preserved
+      proxy_set_header X-Real-IP $remote_addr;
+      # The IP address of the client (which might be a proxy itself)
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      ##Parametros novos
+      #keepalive_timeout 300s;
+      #keepalive_requests 100000;
+     # proxy_connect_timeout       75;
+     # proxy_send_timeout          600;
+    #  send_timeout
+       ###Time-out
+        proxy_connect_timeout      30;
+        proxy_send_timeout         30;
+        proxy_read_timeout         30;
+      ###Fim
+      ######Buffer
+       proxy_buffer_size          128k;
+       proxy_buffers              4 256k;
+       proxy_busy_buffers_size    256k;
+       proxy_ignore_client_abort on;
+      ####qualquer coisa desativar acima
+      proxy_pass http://api;
+  }
+    ####Bloqueio Rais
+   location / {
+          return 403;
+        }
+
+}
